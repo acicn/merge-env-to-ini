@@ -70,19 +70,17 @@ func applyModifies(modifies map[string]map[string]string, lines [][]byte) [][]by
 
 		// 分段
 		if bytes.HasPrefix(line, []byte("[")) && bytes.HasSuffix(line, []byte("]")) {
-			log.Printf("End of Section: [%s]", s)
 			// 结束当前分段，把所有未处理的值写入分段内
 			kv := modifies[string(s)]
 			delete(modifies, string(s))
 			for k, v := range kv {
-				log.Printf("Append: %s = %s", k, v)
+				log.Printf("Append: [%s] %s = %s", s, k, v)
 				lines = append(append(lines[0:i], []byte(fmt.Sprintf("%s = %s", k, v))), lines[i:]...)
 				i++
 			}
 			// 开始新分段
 			s = bytes.TrimSpace(bytes.TrimSuffix(bytes.TrimPrefix(line, []byte("[")), []byte("]")))
 			replaced = map[string]bool{}
-			log.Printf("Beginning of Section: [%s]", s)
 			i++
 			continue
 		}
@@ -110,7 +108,7 @@ func applyModifies(modifies map[string]map[string]string, lines [][]byte) [][]by
 		// 检查键值是否已经写入，则注释掉该行
 		if replaced[string(currentK)] {
 			if !isComment {
-				log.Printf("Comment out: %d: %s", i, line)
+				log.Printf("Comment: [%s] #%d: %s", s, i, line)
 				lines[i] = append([]byte("; "), line...)
 			}
 			i++
@@ -119,7 +117,7 @@ func applyModifies(modifies map[string]map[string]string, lines [][]byte) [][]by
 		// 尝试获取 kv
 		if v, ok := modifies[string(s)][string(currentK)]; ok {
 			// 找到了 k 相同的值，替换当前行
-			log.Printf("Replace: %s = %s", currentK, v)
+			log.Printf("Replace: [%s] %s = %s", s, currentK, v)
 			lines[i] = []byte(fmt.Sprintf("%s = %s", currentK, v))
 			replaced[string(currentK)] = true
 			delete(modifies[string(s)], string(currentK))
@@ -134,7 +132,7 @@ func applyModifies(modifies map[string]map[string]string, lines [][]byte) [][]by
 	kv := modifies[string(s)]
 	delete(modifies, string(s))
 	for k, v := range kv {
-		log.Printf("Append: %s = %s", k, v)
+		log.Printf("Append: [%s] %s = %s", s, k, v)
 		lines = append(lines, []byte(fmt.Sprintf("%s = %s", k, v)))
 	}
 
