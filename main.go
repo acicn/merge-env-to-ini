@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -164,6 +166,20 @@ func main() {
 		optFrom string
 		optTo   string
 	)
+
+	flag.StringVar(&optFrom, "from", "", "environment variable prefix")
+	flag.StringVar(&optTo, "to", "", "file to modify")
+	flag.Parse()
+
+	if optFrom == "" {
+		err = errors.New("missing --from")
+		return
+	}
+
+	if optTo == "" {
+		err = errors.New("missing --to")
+		return
+	}
 
 	modifies := decodeModifies(os.Environ(), optFrom)
 
