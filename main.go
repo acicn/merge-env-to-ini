@@ -86,7 +86,7 @@ func applyModifies(modifies map[string]map[string]string, lines [][]byte) [][]by
 		}
 
 		// 分段不作处理
-		if len(modifies[string(s)]) == 0 {
+		if len(modifies[string(s)]) == 0 && len(replaced) == 0 {
 			i++
 			continue
 		}

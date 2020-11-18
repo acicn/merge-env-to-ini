@@ -46,7 +46,7 @@ func TestApplyModifies(t *testing.T) {
 		[]byte("[section1]"),
 		[]byte(";; whatafdafdfad"),
 		[]byte("key_a = val_a"),
-		[]byte(";  key_a   = val_0"),
+		[]byte("; key_a   = val_0"),
 		[]byte("[section2]"),
 		[]byte(";; whatafdafdfad"),
 		[]byte(" key_a   = val_0"),
